@@ -20,6 +20,8 @@ class Question(models.Model):
     section = models.ForeignKey(Section)
     text = models.CharField(max_length=1000)
     order = models.IntegerField(default=0)
+    image = models.ImageField(null=True, blank=True)
+    multiple_choice = models.BooleanField(default=False)
 
     def __str__(self):
         return self.section.survey.title + ": question #" + str(self.order)

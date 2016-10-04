@@ -8,8 +8,11 @@ def key_exists(d, key):
 
 def get_value(d, key):
     if str(key) in d:
-        return int(d[str(key)])
-    return "None"
+        res = d.getlist(str(key))
+        res = [int(i) for i in res]
+        print(res)
+        return res
+    return []
 
 register.filter('key_exists', key_exists)
 register.filter('get_value', get_value)

@@ -26,9 +26,10 @@ def submit(request, survey_id):
         for field in request.POST.keys():
             if field == "csrfmiddlewaretoken": continue
             question = Question.objects.get(pk=int(field))
-            answer = Option.objects.get(pk=int(request.POST.get(field)))
-            if not answer.question.id == question.id: raise
-            if not question.section.survey.id == int(survey_id): raise
+            for answer_val in request.POST.getlist(field):
+                answer = Option.objects.get(pk=int(answer_val))
+                if not answer.question.id == question.id: raise
+                if not question.section.survey.id == int(survey_id): raise
         survey = Survey.objects.get(pk=int(survey_id))
         for section in survey.section_set.all():
             for question in section.question_set.all():
@@ -42,12 +43,13 @@ def submit(request, survey_id):
         for field in request.POST.keys():
             if field == "csrfmiddlewaretoken": continue
             question = Question.objects.get(pk=int(field))
-            answer = Option.objects.get(pk=int(request.POST.get(field)))
-            question_answer = QuestionAnswer()
-            question_answer.participation = participation
-            question_answer.question = question
-            question_answer.answer = answer
-            question_answer.save()
+            for answer_val in request.POST.getlist(field):
+                answer = Option.objects.get(pk=int(answer_val))
+                question_answer = QuestionAnswer()
+                question_answer.participation = participation
+                question_answer.question = question
+                question_answer.answer = answer
+                question_answer.save()
         request.session[str(survey_id)] = True
         return redirect('/')
     return index(request, survey_id)

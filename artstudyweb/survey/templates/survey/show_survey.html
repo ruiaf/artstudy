@@ -10,14 +10,21 @@
 
     <form name="survey" action="/submit/{{survey.id}}/" method="post">
     {% csrf_token %}
+           {% if default_values %}
+                <div class="alert alert-danger">
+           	Please answer all questions.
+                </div>
+	   {% endif %}
     {% for section in survey.section_set.all %}
-	<h2>{{section.title}}</h2>
-        <p>{{section.description}}</p>
-
         {% for question in section.question_set.all %}
            <div class="panel panel-default">
            <div class="panel-heading">
-	       <h3 class="panel-title">{{question.text}}</h3> 
+	       <h3 class="panel-title">
+               {{question.text}}
+	       {% if question.image %}
+	           <img src="/static/{{question.image}}" alt="" class="img-thumbnail clear-fix"/>
+	       {% endif %}
+               </h3> 
            </div>
            <div class="panel-body">
            {% if default_values and not default_values|key_exists:question.id %}
@@ -30,17 +37,17 @@
            <div class="radiobox_spacing clear-fix">
 	   <label>
 	   {% if option.image %}
-               {% if default_values and default_values|key_exists:question.id and default_values|get_value:question.id == option.id%}
-	           <input type="radio" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
+               {% if default_values and default_values|key_exists:question.id and option.id in default_values|get_value:question.id %}
+	           <input type="{% if not question.multiple_choice %}radio{%else%}checkbox{% endif %}" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
 	       {% else %}
-	           <input type="radio" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
+	           <input type="{% if not question.multiple_choice %}radio{%else%}checkbox{% endif %}" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
 	       {% endif %}
 	       <img src="/static/{{option.image}}" alt="{{option.hoovertext}}" class="img-thumbnail clear-fix"/>
 	   {% else %}
-               {% if default_values and default_values|key_exists:question.id and default_values|get_value:question.id == option.id%}
-	           <input type="radio" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
+               {% if default_values and default_values|key_exists:question.id and option.id in default_values|get_value:question.id %}
+	           <input type="{% if not question.multiple_choice %}radio{%else%}checkbox{% endif %}" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
 	       {% else %}
-	           <input type="radio" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
+	           <input type="{% if not question.multiple_choice %}radio{%else%}checkbox{% endif %}" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
 	       {% endif %}
 	       <p class="clear-fix">
 	       {{option.text}}
