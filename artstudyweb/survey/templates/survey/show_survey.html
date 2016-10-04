@@ -1,0 +1,61 @@
+{% extends "survey/base.html" %}
+{% load survey_extras %}
+
+{% block body %}
+{% if survey %}
+    <div class="jumbotron">
+    <h1>{{survey.title}}</h1>
+    <p>{{survey.title}}</p>
+    </div>
+
+    <form name="survey" action="/submit/{{survey.id}}/" method="post">
+    {% csrf_token %}
+    {% for section in survey.section_set.all %}
+	<h2>{{section.title}}</h2>
+        <p>{{section.description}}</p>
+
+        {% for question in section.question_set.all %}
+           <div class="panel panel-default">
+           <div class="panel-heading">
+	       <h3 class="panel-title">{{question.text}}</h3> 
+           </div>
+           <div class="panel-body">
+           {% if default_values and not default_values|key_exists:question.id %}
+                <div class="alert alert-danger">
+           	Please select an option.
+                </div>
+	   {% endif %}
+
+           {% for option in question.option_set.all %}
+           <div class="radiobox_spacing clear-fix">
+	   <label>
+	   {% if option.image %}
+               {% if default_values and default_values|key_exists:question.id and default_values|get_value:question.id == option.id%}
+	           <input type="radio" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
+	       {% else %}
+	           <input type="radio" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
+	       {% endif %}
+	       <img src="/static/{{option.image}}" alt="{{option.hoovertext}}" class="img-thumbnail clear-fix"/>
+	   {% else %}
+               {% if default_values and default_values|key_exists:question.id and default_values|get_value:question.id == option.id%}
+	           <input type="radio" name="{{question.id}}" value="{{option.id}}" checked="checked" class="clear-fix">
+	       {% else %}
+	           <input type="radio" name="{{question.id}}" value="{{option.id}}" class="clear-fix">
+	       {% endif %}
+	       <p class="clear-fix">
+	       {{option.text}}
+               </p>
+	   {% endif %}
+           </label>
+	   </div>
+           {% endfor %}
+           </div>
+           </div>
+        {% endfor %}
+    {% endfor %}
+    <input type="submit" value="Submit" class="btn btn-success btn-lg">
+    </form>
+{% else %}
+    <p>Survey is no longer available.</p>
+{% endif %}
+{% endblock %}

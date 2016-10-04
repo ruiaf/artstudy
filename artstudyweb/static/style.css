@@ -1,0 +1,12 @@
+.radiobox_spacing {
+    float: left;
+    margin-left: 30px;
+}
+
+.radiobox_spacing input {
+    float: left;
+    width: 30px;
+}
+.radiobox_spacing p {
+    float: left;
+}
